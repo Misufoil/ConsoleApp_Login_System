@@ -43,40 +43,34 @@ void Human::information_print() {
     cout << "Age: " << age << endl;
 }
 
-//ostream& operator<<(ostream& os, const )
-
 void IsLoggedIn() {
 
-    string login, password, lg,  pw;
+    string login, password, lg, pw;
 
     cout << "\nEnter login: ";  cin >> login;
     cout << "Enter password: "; cin >> password;
 
     ifstream fin;
-
-    try {
-        fin.open(login + ".txt");
-    }
-    catch (const ifstream::failure& ex) {
-        cout << ex.what() << endl;
-        cout << ex.code() << endl;
-        cout << "Account logged in error!";
-    }
+    fin.open(login + ".txt");
+    if (!fin.is_open()) {
+        throw exception("Incorrect login or password.");    
+    } 
 
     Human prsn;
     fin.read((char*)&prsn, sizeof(Human));
 
     lg = prsn.getLogin();
     pw = prsn.getPasword();
-    if (lg == login && pw == password) {
+    if (lg == login && pw == password) {  
         cout << "Succesfully logged in!" << endl;
         cout << "\n\t\tACCAUNT DETAILS\n";
-        prsn.information_print(); 
+        prsn.information_print();
     }
-    else {   
-        cout << "False Login !" << endl;;
+    else {
+        fin.close();
+        throw "Incorrect login or password";
     }
-    fin.close();
+    //fin.close();
 }
 
 int main() {
@@ -97,7 +91,6 @@ int main() {
             ifstream my_file(path);
             if (my_file) {
                 cout << "This login already exists!" << endl;
-
             }
             else {
                 break;
@@ -124,6 +117,20 @@ int main() {
         main();
     }
     else if (choice == 2) {
-        IsLoggedIn();
+        try {
+            IsLoggedIn();
+        }
+       // catch (exception &ex) {
+        //    cout << endl << ex.what() << endl << endl;
+       //     main();
+        //}
+        //catch (const char *ex) {
+         //   cout << endl << ex << endl << endl;
+        //    main();
+        //}
+        catch (...)  {
+            cout << endl << "Incorrect login or password." << endl << endl;
+           // main();
+        }
     }
 }
