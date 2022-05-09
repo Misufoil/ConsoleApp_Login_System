@@ -43,6 +43,17 @@ void Human::information_print() {
     cout << "Age: " << age << endl;
 }
 
+template<typename T>
+T InputError(T number) {
+    while (!(cin >> number) || (cin.peek() != '\n')) {
+        cin.clear();
+        while (cin.get() != '\n');
+        cout << "Input error! Retry input: ";
+    }
+    return number;
+}
+
+
 void IsLoggedIn() {
 
     string login, password, lg, pw;
@@ -52,33 +63,37 @@ void IsLoggedIn() {
 
     ifstream fin;
     fin.open(login + ".txt");
-    if (!fin.is_open()) {
-        throw exception("Incorrect login or password.");    
-    } 
+    try {
+        if (!fin.is_open()) {
+            throw "Incorrect login or password.";
+        }
+    }
+    catch (const char *ex) {
+        cout << ex << endl;
+    }
+    
 
     Human prsn;
     fin.read((char*)&prsn, sizeof(Human));
 
     lg = prsn.getLogin();
     pw = prsn.getPasword();
-    if (lg == login && pw == password) {  
+
+    if (lg == login && pw == password) {
         cout << "Succesfully logged in!" << endl;
         cout << "\n\t\tACCAUNT DETAILS\n";
         prsn.information_print();
     }
-    else {
-        fin.close();
-        throw "Incorrect login or password";
-    }
-    //fin.close();
+    fin.close();
 }
 
 int main() {
-    int choice;
+    bool choice = 0;
 
-    cout << "1: Register\n2: Login\nYour choice: "; cin >> choice;
+    cout << "0: Register\n1: Login\nYour choice: ";
+    choice = InputError(choice);
 
-    if (choice == 1) {
+    if (choice == 0) {
 
         string login, pasword, first_Name, last_Name, path;
         int age;
@@ -116,21 +131,12 @@ int main() {
 
         main();
     }
-    else if (choice == 2) {
+    else if (choice == 1) {
         try {
             IsLoggedIn();
         }
-       // catch (exception &ex) {
-        //    cout << endl << ex.what() << endl << endl;
-       //     main();
-        //}
-        //catch (const char *ex) {
-         //   cout << endl << ex << endl << endl;
-        //    main();
-        //}
-        catch (...)  {
-            cout << endl << "Incorrect login or password." << endl << endl;
-           // main();
+        catch (...) {
+            cout << "Incorrect login or password." << endl;
         }
     }
 }
